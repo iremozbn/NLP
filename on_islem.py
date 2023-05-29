@@ -1,6 +1,9 @@
 import pandas as pd
 import re 
 import snowballstemmer 
+from sklearn.feature_extraction.text import CountVectorizer #bow için kullanılan kütüphane
+from sklearn.feature_extraction.text import TfidfVectorizer #bowdan daha yaygın
+from gensim.models import Word2Vec #nlp kütüphanesi
 
 #sayısal değerlerin kaldırılması
 def remove_numeric(value):
@@ -72,3 +75,33 @@ def pre_processing(value):
 #Boşlukların silinmesi
 def remove_space(value):
     return[item for item in value if item.strip()] #strip kaldırma
+
+#bag of words
+
+def bag_of_words(value):
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(value)
+    return X.toarray().tolist()
+
+#TF-IDF
+
+def tfidf(value):
+    vectorizer = TfidfVectorizer()
+    X =vectorizer.fit_transform(value)
+    return X.toarray().tolist()
+
+#word2vec model
+
+def word2vec(value):
+    model = Word2Vec.load("word2vec.model")
+    bfr_list = []
+    bfr_len = len(value)
+    
+    for k in value:
+        bfr = model.wv.key_to_index[k]
+        bfr = model.wv[bfr]
+        bfr_list.append(bfr)
+        
+    bfr_list=sum(bfr_list)
+    bfr_list=bfr_list/bfr_len
+    return bfr_list.tolist()
